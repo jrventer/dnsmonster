@@ -77,7 +77,7 @@ func clickhouseOutput(resultChannel chan DNSResult, exiting chan bool, wg *sync.
 				batch = append(batch, data)
 			}
 		case <-ticker:
-			if err := clickhouseSendData(connect, batch, serverByte, trafficClass); err != nil {
+			if err := clickhouseSendData(connect, batch, serverByte); err != nil {
 				log.Println(err)
 				connect = connectClickhouseRetry(exiting, clickhouseHost)
 			} else {
@@ -91,7 +91,7 @@ func clickhouseOutput(resultChannel chan DNSResult, exiting chan bool, wg *sync.
 	}
 }
 
-func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server []byte, trafficClass uint) error {
+func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server []byte) error {
 	if len(batch) == 0 {
 		return nil
 	}
