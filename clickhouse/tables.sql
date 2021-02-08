@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS DNS_LOG (
   DnsDate Date,
   timestamp DateTime,
   Server String,
+  trafficClass UInt8,
   IPVersion UInt8,
   IPPrefix UInt32,
   Protocol FixedString(3),
