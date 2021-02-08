@@ -91,7 +91,7 @@ func clickhouseOutput(resultChannel chan DNSResult, exiting chan bool, wg *sync.
 	}
 }
 
-func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server []byte) error {
+func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server []byte, trafficClass uint) error {
 	if len(batch) == 0 {
 		return nil
 	}
