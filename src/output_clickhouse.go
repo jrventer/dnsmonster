@@ -104,7 +104,7 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 		return err
 	}
 
-	_, err = connect.Prepare("INSERT INTO DNS_LOG (DnsDate, timestamp, Server, trafficClass, IPVersion, IPPrefix, Protocol, QR, OpCode, Class, Type, ResponseCode, Question, Size, Edns0Present, DoBit,FullQuery, ID) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+	_, err = connect.Prepare("INSERT INTO DNS_LOG (DnsDate, timestamp, Server, IPVersion, IPPrefix, Protocol, QR, OpCode, Class, Type, ResponseCode, Question, Size, Edns0Present, DoBit,FullQuery, ID) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
 	if err != nil {
 		return err
 	}
@@ -163,24 +163,23 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 					b.WriteDate(0, batch[k].Timestamp)
 					b.WriteDateTime(1, batch[k].Timestamp)
 					b.WriteBytes(2, server)
-					b.WriteUInt8(3, uint8(trafficClass))
-					b.WriteUInt8(4, batch[k].IPVersion)
-					b.WriteUInt32(5, binary.BigEndian.Uint32(ip[:4]))
-					b.WriteFixedString(6, []byte(batch[k].Protocol))
-					b.WriteUInt8(7, QR)
-					b.WriteUInt8(8, uint8(batch[k].DNS.Opcode))
-					b.WriteUInt16(9, uint16(dnsQuery.Qclass))
-					b.WriteUInt16(10, uint16(dnsQuery.Qtype))
-					b.WriteUInt8(11, uint8(batch[k].DNS.Rcode))
-					b.WriteString(12, string(dnsQuery.Name))
-					b.WriteUInt16(13, batch[k].PacketLength)
-					b.WriteUInt8(14, edns)
-					b.WriteUInt8(15, doBit)
+					b.WriteUInt8(3, batch[k].IPVersion)
+					b.WriteUInt32(4, binary.BigEndian.Uint32(ip[:4]))
+					b.WriteFixedString(5, []byte(batch[k].Protocol))
+					b.WriteUInt8(6, QR)
+					b.WriteUInt8(7, uint8(batch[k].DNS.Opcode))
+					b.WriteUInt16(8, uint16(dnsQuery.Qclass))
+					b.WriteUInt16(9, uint16(dnsQuery.Qtype))
+					b.WriteUInt8(10, uint8(batch[k].DNS.Rcode))
+					b.WriteString(11, string(dnsQuery.Name))
+					b.WriteUInt16(12, batch[k].PacketLength)
+					b.WriteUInt8(13, edns)
+					b.WriteUInt8(14, doBit)
 
-					b.WriteFixedString(16, fullQuery)
+					b.WriteFixedString(15, fullQuery)
 					// b.WriteFixedString(15, uuid.NewV4().Bytes())
 					myUUID := uuidGen.Next()
-					b.WriteFixedString(17, myUUID[:18])
+					b.WriteFixedString(16, myUUID[:17])
 					// b.WriteArray(15, uuidGen.Next())
 				}
 			}
