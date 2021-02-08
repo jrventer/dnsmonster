@@ -60,7 +60,7 @@ func min(a, b int) int {
 	return b
 }
 
-func clickhouseOutput(resultChannel chan DNSResult, exiting chan bool, wg *sync.WaitGroup, clickhouseHost string, clickhouseBatchSize uint, batchDelay time.Duration, limit int, server string, trafficClass uint) {
+func clickhouseOutput(resultChannel chan DNSResult, exiting chan bool, wg *sync.WaitGroup, clickhouseHost string, clickhouseBatchSize uint, batchDelay time.Duration, limit int, server string, trafficClass uint8) {
 	wg.Add(1)
 	defer wg.Done()
 	serverByte := []byte(server)
