@@ -11,7 +11,7 @@ EOF
 
 dockercomposetemplate=$(cat <<EOF
   ch:
-    image: yandex/clickhouse-server:20.5
+    image: yandex/clickhouse-server:latest
     restart: always
     ports:
       - "8123:8123"
@@ -36,7 +36,7 @@ dockercomposetemplate=$(cat <<EOF
         timeout: 10s
         retries: 3
   grafana:
-    image: grafana/grafana:7.1.0-beta2
+    image: grafana/grafana:latest
     restart: always
     ports:
       - "3000:3000"
@@ -55,7 +55,7 @@ EOF
 dnsmonsteragent=$(cat <<EOF
 
   dnsmonster_DEVNAME:
-    image: mosajjal/dnsmonster:latest
+    image: jrventer/dnsmonster:latest
     restart: always
     cap_add:
       - NET_ADMIN
@@ -68,8 +68,9 @@ dnsmonsteragent=$(cat <<EOF
     command:
       - "-serverName=HOSTNAME"
       - "-devName=DEVNAME"
+      - "-clickhouseOutputType=1"
       - "-clickhouseAddress=127.0.0.1:9000"
-      - "-batchSize=BATCHSIZE"
+      - "-clickhouseBatchSize=BATCHSIZE"
 
 EOF
 )
