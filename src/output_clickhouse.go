@@ -163,7 +163,7 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 					b.WriteDate(0, batch[k].Timestamp)
 					b.WriteDateTime(1, batch[k].Timestamp)
 					b.WriteBytes(2, server)
-					b.WriteUInt8(3, uint8(trafficClass))
+					b.WriteUInt8(3, trafficClass)
 					b.WriteUInt8(4, batch[k].IPVersion)
 					b.WriteUInt32(5, binary.BigEndian.Uint32(ip[:4]))
 					b.WriteFixedString(6, []byte(batch[k].Protocol))
