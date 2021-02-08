@@ -271,7 +271,7 @@ func main() {
 		go stdoutOutput(stdoutResultChannel, exiting, &wg)
 	}
 	if *clickhouseOutputType > 0 {
-		go clickhouseOutput(clickhouseResultChannel, exiting, &wg, *clickhouseAddress, *clickhouseBatchSize, *clickhouseDelay, *packetLimit, *serverName)
+		go clickhouseOutput(clickhouseResultChannel, exiting, &wg, *clickhouseAddress, *clickhouseBatchSize, *clickhouseDelay, *packetLimit, *serverName, *trafficClass)
 	}
 	if *kafkaOutputType > 0 {
 		go kafkaOutput(kafkaResultChannel, exiting, &wg, *kafkaOutputBroker, *kafkaOutputTopic, *kafkaBatchSize, *clickhouseDelay, *packetLimit)

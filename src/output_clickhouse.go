@@ -60,7 +60,7 @@ func min(a, b int) int {
 	return b
 }
 
-func clickhouseOutput(resultChannel chan DNSResult, exiting chan bool, wg *sync.WaitGroup, clickhouseHost string, clickhouseBatchSize uint, batchDelay time.Duration, limit int, server string) {
+func clickhouseOutput(resultChannel chan DNSResult, exiting chan bool, wg *sync.WaitGroup, clickhouseHost string, clickhouseBatchSize uint, batchDelay time.Duration, limit int, server string, trafficClass uint) {
 	wg.Add(1)
 	defer wg.Done()
 	serverByte := []byte(server)
@@ -163,7 +163,7 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 					b.WriteDate(0, batch[k].Timestamp)
 					b.WriteDateTime(1, batch[k].Timestamp)
 					b.WriteBytes(2, server)
-					b.WriteUInt8(3, uint8(trafficClass))
+					b.WriteUInt8(3, trafficClass)
 					b.WriteUInt8(4, batch[k].IPVersion)
 					b.WriteUInt32(5, binary.BigEndian.Uint32(ip[:4]))
 					b.WriteFixedString(6, []byte(batch[k].Protocol))
