@@ -44,7 +44,7 @@ func connectClickhouseRetry(exiting chan bool, clickhouseHost string) clickhouse
 }
 
 func connectClickhouse(exiting chan bool, clickhouseHost string) (clickhouse.Clickhouse, error) {
-	connection, err := clickhouse.OpenDirect(fmt.Sprintf("tcp://%v?debug=%v", clickhouseHost, *clickhouseDebug))
+	connection, err := clickhouse.OpenDirect(fmt.Sprintf("tcp://%v?debug=%v&read_timeout=60&write_timeout=60", clickhouseHost, *clickhouseDebug))
 	connection.SetConnMaxLifetime(15*time.Minute)
 	if err != nil {
 		log.Println(err)
