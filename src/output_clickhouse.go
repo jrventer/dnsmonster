@@ -160,9 +160,13 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 							doBit = 1
 						}
 					}
-					eTLDPlusOne, err := publicsuffix.EffectiveTLDPlusOne(string(dnsQuery.Name))
+					eTLDPlusOne, err := publicsuffix.EffectiveTLDPlusOne(dnsQuery.Name)
 					if err == nil && eTLDPlusOne != "" {
 						eTLDPlusOne = strings.TrimRight(eTLDPlusOne, ".")
+					} else if strings.Count(dnsQuery.Name, ".") == 1 {
+						// Handle publicsuffix.EffectiveTLDPlusOne eTLD+1 error with 1 dot in the domain.
+						s := strings.Split(dnsQuery.Name, ".")
+						eTLDPlusOne = dnsQuery.Name
 					}
 
 					b.NumRows++
