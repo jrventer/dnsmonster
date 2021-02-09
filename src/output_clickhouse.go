@@ -167,7 +167,8 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 						// Handle publicsuffix.EffectiveTLDPlusOne eTLD+1 error with 1 dot in the domain.
 						eTLDPlusOne = dnsQuery.Name
 					}
-					log.Println(fmt.Sprintf("debug question:%v etld+1:%v", dnsQuery.Name,eTLDPlusOne))
+					testeTLDPlusOne, err := publicsuffix.EffectiveTLDPlusOne("app.sync.google.com")
+					log.Println(fmt.Sprintf("debug question:%v etld+1:%v static:%v", dnsQuery.Name,eTLDPlusOne,testeTLDPlusOne))
 					b.NumRows++
 					//writing the vars into a SQL statement
 					b.WriteDate(0, batch[k].Timestamp)

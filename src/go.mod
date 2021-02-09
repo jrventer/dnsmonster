@@ -16,5 +16,4 @@ require (
 	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
 	golang.org/x/sys v0.0.0-20201106081118-db71ae66460a // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
-	golang.org/x/net/publicsuffix v0.0.0-20210129194117-4acb7895a057
 )
