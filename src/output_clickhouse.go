@@ -160,7 +160,7 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 							doBit = 1
 						}
 					}
-					eTLDPlusOne, err := publicsuffix.EffectiveTLDPlusOne(string(dnsQuery.Name))
+					neweTLDPlusOne, err := publicsuffix.EffectiveTLDPlusOne(string(dnsQuery.Name))
 					//if err == nil && eTLDPlusOne != "" {
 					//	eTLDPlusOne = strings.TrimRight(eTLDPlusOne, ".")
 					//} else if strings.Count(dnsQuery.Name, ".") == 1 {
@@ -168,7 +168,7 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 					//	eTLDPlusOne = dnsQuery.Name
 					//}
 					testeTLDPlusOne, err := publicsuffix.EffectiveTLDPlusOne("app.sync.google.com")
-					log.Println(fmt.Sprintf("debug question:%v etld+1:%v static:%v", dnsQuery.Name,eTLDPlusOne,testeTLDPlusOne))
+					log.Println(fmt.Sprintf("debug question:%v etld+1:%v static:%v", dnsQuery.Name,neweTLDPlusOne,testeTLDPlusOne))
 					b.NumRows++
 					//writing the vars into a SQL statement
 					b.WriteDate(0, batch[k].Timestamp)
