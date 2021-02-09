@@ -104,7 +104,7 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 		return err
 	}
 
-	_, err = connect.Prepare("INSERT INTO DNS_LOG (DnsDate, timestamp, Server, IPVersion, IPPrefix, Protocol, QR, OpCode, Class, Type, ResponseCode, Question, Size, Edns0Present, DoBit,FullQuery, ID) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+	_, err = connect.Prepare("INSERT INTO DNS_LOG (DnsDate, timestamp, Server, IPVersion, IPPrefix, Protocol, QR, OpCode, Class, Type, ResponseCode, Question, Size, Edns0Present, DoBit,FullQuery, ID, trafficClass) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
 	if err != nil {
 		return err
 	}
@@ -181,6 +181,8 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 					myUUID := uuidGen.Next()
 					b.WriteFixedString(16, myUUID[:16])
 					// b.WriteArray(15, uuidGen.Next())
+					// New Classification Fields
+					b.WriteUInt8(17, 1)
 				}
 			}
 			if err := connect.WriteBlock(b); err != nil {
