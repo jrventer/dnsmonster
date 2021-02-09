@@ -1,4 +1,4 @@
-module github.com/mosajjal/dnsmonster
+module github.com/jrventer/dnsmonster
 
 go 1.15
 
