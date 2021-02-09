@@ -13,6 +13,7 @@ import (
 	"github.com/ClickHouse/clickhouse-go"
 	data "github.com/ClickHouse/clickhouse-go/lib/data"
 	"github.com/rogpeppe/fastuuid"
+	"golang.org/x/net/publicsuffix"
 )
 
 var chstats = outputStats{"Clickhouse", 0, 0}
@@ -105,7 +106,7 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 		return err
 	}
 
-	_, err = connect.Prepare("INSERT INTO DNS_LOG (DnsDate, timestamp, Server, IPVersion, IPPrefix, Protocol, QR, OpCode, Class, Type, ResponseCode, Question, Size, Edns0Present, DoBit,FullQuery, ID, ClusterName, NodeQualifier) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+	_, err = connect.Prepare("INSERT INTO DNS_LOG (DnsDate, timestamp, Server, IPVersion, IPPrefix, Protocol, QR, OpCode, Class, Type, ResponseCode, Question, Size, Edns0Present, DoBit,FullQuery, ID, ClusterName, NodeQualifier, EtldPlusOne) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
 	if err != nil {
 		return err
 	}
@@ -158,6 +159,10 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 							doBit = 1
 						}
 					}
+					eTLDPlusOne, err := publicsuffix.EffectiveTLDPlusOne(q.Name)
+					if err == nil && eTLDPlusOne != "" {
+						eTLDPlusOne = strings.TrimRight(eTLDPlusOne, ".")
+					}
 
 					b.NumRows++
 					//writing the vars into a SQL statement
@@ -185,6 +190,7 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 					// New Classification Fields
 					b.WriteFixedString(17, clusterName)
 					b.WriteUInt8(18, uint8(NodeQualifier))
+					b.WriteString(19, string(eTLDPlusOne))
 				}
 			}
 			if err := connect.WriteBlock(b); err != nil {
