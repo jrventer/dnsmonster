@@ -44,7 +44,7 @@ func connectClickhouseRetry(exiting chan bool, clickhouseHost string) clickhouse
 }
 
 func connectClickhouse(exiting chan bool, clickhouseHost string) (clickhouse.Clickhouse, error) {
-	connection, err := clickhouse.OpenDirect(fmt.Sprintf("tcp://%v?debug=%v&keepAliveTimeout=300000&socket_timeout=300000&dataTransferTimeout=300000", clickhouseHost, *clickhouseDebug))
+	connection, err := clickhouse.OpenDirect(fmt.Sprintf("tcp://%v?debug=%v", clickhouseHost, *clickhouseDebug))
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -179,7 +179,7 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 					b.WriteFixedString(15, fullQuery)
 					// b.WriteFixedString(15, uuid.NewV4().Bytes())
 					myUUID := uuidGen.Next()
-					b.WriteFixedString(16, myUUID[:17])
+					b.WriteFixedString(16, myUUID[:16])
 					// b.WriteArray(15, uuidGen.Next())
 				}
 			}
