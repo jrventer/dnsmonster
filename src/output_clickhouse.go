@@ -195,7 +195,7 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 					// New Classification Fields
 					b.WriteFixedString(17, clusterName)
 					b.WriteUInt8(18, uint8(NodeQualifier))
-					b.WriteString(19, string(eTLDPlusOne))
+					b.WriteString(19, string(neweTLDPlusOne))
 				}
 			}
 			if err := connect.WriteBlock(b); err != nil {
