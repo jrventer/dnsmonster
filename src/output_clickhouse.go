@@ -9,7 +9,7 @@ import (
 	"net"
 	"sync"
 	"time"
-	//"strings"
+	"strings"
 
 	"github.com/ClickHouse/clickhouse-go"
 	data "github.com/ClickHouse/clickhouse-go/lib/data"
