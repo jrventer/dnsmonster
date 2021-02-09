@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS DNS_LOG (
   DnsDate Date,
   timestamp DateTime,
   Server String,
-  trafficClass UInt8,
+  NodeQualifier UInt8,
+  ClusterName, String,
   IPVersion UInt8,
   IPPrefix UInt32,
   Protocol FixedString(3),
@@ -15,6 +16,7 @@ CREATE TABLE IF NOT EXISTS DNS_LOG (
   FullQuery String,
   ResponseCode UInt8,
   Question String,
+  EtldPlusOne String,
   Size UInt16,
   ID UUID
 ) 

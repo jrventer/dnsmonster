@@ -19,7 +19,7 @@ import (
 	"github.com/namsral/flag"
 )
 
-const VERSION = "v0.8.3_6"
+const VERSION = "v0.8.3_7"
 
 var fs = flag.NewFlagSetWithEnvPrefix(os.Args[0], "DNSMONSTER", 0)
 var devName = fs.String("devName", "", "Device used to capture")
@@ -39,6 +39,7 @@ var captureStatsDelay = fs.Duration("captureStatsDelay", time.Second, "Duration 
 var printStatsDelay = fs.Duration("printStatsDelay", time.Second*10, "Duration to print capture and database stats")
 var maskSize = fs.Int("maskSize", 32, "Mask source IPs by bits. 32 means all the bits of IP is saved in DB")
 var serverName = fs.String("serverName", "default", "Name of the server used to index the metrics.")
+var nodeQualifier = fs.Uint("nodeQualifier", 0, "Node Qulifier to classify on which side the traffic is. Options: default 0: Mixed, 1: Subscriber, 2: Internet")
 var sampleRatio = fs.String("sampleRatio", "1:1", "Capture Sampling by a:b. eg sampleRatio of 1:100 will process 1 percent of the incoming packets")
 var saveFullQuery = fs.Bool("saveFullQuery", false, "Save full packet query and response in JSON format")
 var packetHandlerCount = fs.Uint("packetHandlers", 1, "Number of routines used to handle received packets")
@@ -270,7 +271,7 @@ func main() {
 		go stdoutOutput(stdoutResultChannel, exiting, &wg)
 	}
 	if *clickhouseOutputType > 0 {
-		go clickhouseOutput(clickhouseResultChannel, exiting, &wg, *clickhouseAddress, *clickhouseBatchSize, *clickhouseDelay, *packetLimit, *serverName)
+		go clickhouseOutput(clickhouseResultChannel, exiting, &wg, *clickhouseAddress, *clickhouseBatchSize, *clickhouseDelay, *packetLimit, *serverName, *nodeQualifier)
 	}
 	if *kafkaOutputType > 0 {
 		go kafkaOutput(kafkaResultChannel, exiting, &wg, *kafkaOutputBroker, *kafkaOutputTopic, *kafkaBatchSize, *clickhouseDelay, *packetLimit)
