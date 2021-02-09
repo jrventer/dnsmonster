@@ -272,7 +272,7 @@ func main() {
 		go stdoutOutput(stdoutResultChannel, exiting, &wg)
 	}
 	if *clickhouseOutputType > 0 {
-		go clickhouseOutput(clickhouseResultChannel, exiting, &wg, *clickhouseAddress, *clickhouseBatchSize, *clickhouseDelay, *packetLimit, *serverName, clusterName, *nodeQualifier)
+		go clickhouseOutput(clickhouseResultChannel, exiting, &wg, *clickhouseAddress, *clickhouseBatchSize, *clickhouseDelay, *packetLimit, *serverName, *clusterName, *nodeQualifier)
 	}
 	if *kafkaOutputType > 0 {
 		go kafkaOutput(kafkaResultChannel, exiting, &wg, *kafkaOutputBroker, *kafkaOutputTopic, *kafkaBatchSize, *clickhouseDelay, *packetLimit)
