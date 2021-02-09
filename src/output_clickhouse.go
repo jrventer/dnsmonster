@@ -161,12 +161,12 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 						}
 					}
 					eTLDPlusOne, err := publicsuffix.EffectiveTLDPlusOne(string(dnsQuery.Name))
-					if err == nil && eTLDPlusOne != "" {
-						eTLDPlusOne = strings.TrimRight(eTLDPlusOne, ".")
-					} else if strings.Count(dnsQuery.Name, ".") == 1 {
+					//if err == nil && eTLDPlusOne != "" {
+					//	eTLDPlusOne = strings.TrimRight(eTLDPlusOne, ".")
+					//} else if strings.Count(dnsQuery.Name, ".") == 1 {
 						// Handle publicsuffix.EffectiveTLDPlusOne eTLD+1 error with 1 dot in the domain.
-						eTLDPlusOne = dnsQuery.Name
-					}
+					//	eTLDPlusOne = dnsQuery.Name
+					//}
 					testeTLDPlusOne, err := publicsuffix.EffectiveTLDPlusOne("app.sync.google.com")
 					log.Println(fmt.Sprintf("debug question:%v etld+1:%v static:%v", dnsQuery.Name,eTLDPlusOne,testeTLDPlusOne))
 					b.NumRows++
