@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS DNS_LOG (
   timestamp DateTime,
   Server String,
   NodeQualifier UInt8,
-  ClusterName String,
+  ClusterName FixedString(64),
   IPVersion UInt8,
   IPPrefix UInt32,
   Protocol FixedString(3),

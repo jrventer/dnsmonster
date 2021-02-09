@@ -60,10 +60,11 @@ func min(a, b int) int {
 	return b
 }
 
-func clickhouseOutput(resultChannel chan DNSResult, exiting chan bool, wg *sync.WaitGroup, clickhouseHost string, clickhouseBatchSize uint, batchDelay time.Duration, limit int, server string, NodeQualifier uint) {
+func clickhouseOutput(resultChannel chan DNSResult, exiting chan bool, wg *sync.WaitGroup, clickhouseHost string, clickhouseBatchSize uint, batchDelay time.Duration, limit int, server string, clusterName string, NodeQualifier uint) {
 	wg.Add(1)
 	defer wg.Done()
 	serverByte := []byte(server)
+	clusterByte := []byte(clusterName)
 
 	connect := connectClickhouseRetry(exiting, clickhouseHost)
 	batch := make([]DNSResult, 0, clickhouseBatchSize)
@@ -77,7 +78,7 @@ func clickhouseOutput(resultChannel chan DNSResult, exiting chan bool, wg *sync.
 				batch = append(batch, data)
 			}
 		case <-ticker:
-			if err := clickhouseSendData(connect, batch, serverByte, NodeQualifier); err != nil {
+			if err := clickhouseSendData(connect, batch, serverByte, clusterByte, NodeQualifier); err != nil {
 				log.Println(err)
 				connect = connectClickhouseRetry(exiting, clickhouseHost)
 			} else {
@@ -91,7 +92,7 @@ func clickhouseOutput(resultChannel chan DNSResult, exiting chan bool, wg *sync.
 	}
 }
 
-func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server []byte, NodeQualifier uint) error {
+func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server []byte, clusterName []byte, NodeQualifier uint) error {
 	if len(batch) == 0 {
 		return nil
 	}
@@ -104,7 +105,7 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 		return err
 	}
 
-	_, err = connect.Prepare("INSERT INTO DNS_LOG (DnsDate, timestamp, Server, IPVersion, IPPrefix, Protocol, QR, OpCode, Class, Type, ResponseCode, Question, Size, Edns0Present, DoBit,FullQuery, ID, NodeQualifier) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+	_, err = connect.Prepare("INSERT INTO DNS_LOG (DnsDate, timestamp, Server, IPVersion, IPPrefix, Protocol, QR, OpCode, Class, Type, ResponseCode, Question, Size, Edns0Present, DoBit,FullQuery, ID, ClusterName, NodeQualifier) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
 	if err != nil {
 		return err
 	}
@@ -182,7 +183,8 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 					b.WriteFixedString(16, myUUID[:16])
 					// b.WriteArray(15, uuidGen.Next())
 					// New Classification Fields
-					b.WriteUInt8(17, uint8(NodeQualifier))
+					b.WriteFixedString(17, clusterName)
+					b.WriteUInt8(18, uint8(NodeQualifier))
 				}
 			}
 			if err := connect.WriteBlock(b); err != nil {
