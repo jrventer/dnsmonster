@@ -151,7 +151,7 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 						srcIP = srcIP.Mask(net.CIDRMask(*maskSize, 32))
 						dstIP = dstIP.Mask(net.CIDRMask(*maskSize, 32))
 					}
-					log.Println(fmt.Sprintf("debug dstIP:%v srcIP:%v", dstIP,srcIP))
+					//log.Println(fmt.Sprintf("debug dstIP:%v srcIP:%v", dstIP,srcIP))
 					QR := uint8(0)
 					if batch[k].DNS.Response {
 						QR = 1
