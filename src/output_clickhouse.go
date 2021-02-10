@@ -162,12 +162,12 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 					}
 					eTLDPlusOne, err := publicsuffix.EffectiveTLDPlusOne(strings.TrimSuffix(dnsQuery.Name,"."))
 					if err == nil && eTLDPlusOne != "" {
-						eTLDPlusOne = strings.TrimRight(neweTLDPlusOne, ".")
+						eTLDPlusOne = strings.TrimRight(TLDPlusOne, ".")
 					} else if strings.Count(strings.TrimSuffix(dnsQuery.Name,"."), ".") == 1 {
 						// Handle publicsuffix.EffectiveTLDPlusOne eTLD+1 error with 1 dot in the domain.
 						eTLDPlusOne = strings.TrimSuffix(dnsQuery.Name,".")
 					}
-					log.Println(fmt.Sprintf("debug question:%v etld+1:%v", dnsQuery.Name,neweTLDPlusOne))
+					log.Println(fmt.Sprintf("debug question:%v etld+1:%v", dnsQuery.Name,eTLDPlusOne))
 					b.NumRows++
 					//writing the vars into a SQL statement
 					b.WriteDate(0, batch[k].Timestamp)
@@ -187,14 +187,12 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 					b.WriteUInt8(14, doBit)
 
 					b.WriteFixedString(15, fullQuery)
-					// b.WriteFixedString(15, uuid.NewV4().Bytes())
 					myUUID := uuidGen.Next()
 					b.WriteFixedString(16, myUUID[:16])
-					// b.WriteArray(15, uuidGen.Next())
 					// New Classification Fields
 					b.WriteFixedString(17, clusterName)
 					b.WriteUInt8(18, uint8(NodeQualifier))
-					b.WriteString(19, string(neweTLDPlusOne))
+					b.WriteString(19, string(eTLDPlusOne))
 				}
 			}
 			if err := connect.WriteBlock(b); err != nil {
