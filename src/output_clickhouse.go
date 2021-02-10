@@ -177,7 +177,7 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 					b.WriteBytes(2, server)
 					b.WriteUInt8(3, batch[k].IPVersion)
 					b.WriteUInt32(4, binary.BigEndian.Uint32(srcIP[:4]))
-					b.WriteUInt32(5, binary.BigEndian.Uint32(dstIP[:4]))
+					b.WriteUInt32(5, binary.BigEndian.Uint32(dstIP[:5]))
 					b.WriteFixedString(6, []byte(batch[k].Protocol))
 					b.WriteUInt8(7, QR)
 					b.WriteUInt8(8, uint8(batch[k].DNS.Opcode))
