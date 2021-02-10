@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS DNS_LOG (
   ENGINE = MergeTree()
   PARTITION BY toYYYYMMDD(DnsDate)
   PRIMARY KEY (timestamp , ClusterName, Server, NodeQualifier, cityHash64(ID))
-  ORDER BY (timestamp, Server, cityHash64(ID))
+  ORDER BY (timestamp, ClusterName, Server, NodeQualifier, cityHash64(ID))
   SAMPLE BY cityHash64(ID)
   TTL DnsDate + INTERVAL 30 DAY -- DNS_TTL_VARIABLE
   SETTINGS index_granularity = 8192;
