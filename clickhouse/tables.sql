@@ -143,7 +143,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_RESPONSECODE
   count(*) as Total
   FROM DNS_LOG
   WHERE QR=1
-  GROUP BY DnsDate, timestamp, ClusterName, Server, NodeQualifier, Class;
+  GROUP BY DnsDate, timestamp, ClusterName, Server, NodeQualifier, ResponseCode;
 
 
 -- View with packet sizes
@@ -155,6 +155,6 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_RESPONSECODE
   TTL DnsDate + INTERVAL 30 DAY -- DNS_TTL_VARIABLE
   SETTINGS index_granularity = 8192
   AS
-  SELECT DnsDate, toStartOfMinute(timestamp) as t, ClusterName, Server, NodeQualifier, sumState(Size) AS TotalSize, avgState(Size) AS AverageSize 
+  SELECT DnsDate, toStartOfMinute(timestamp) as t, ClusterName, Server, NodeQualifier, QR, sumState(Size) AS TotalSize, avgState(Size) AS AverageSize 
   FROM DNS_LOG
   GROUP BY DnsDate, t, ClusterName, Server, NodeQualifier, QR;
