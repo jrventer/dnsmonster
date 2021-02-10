@@ -192,7 +192,7 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 
 					b.WriteFixedString(16, fullQuery)
 					myUUID := uuidGen.Next()
-					b.WriteFixedString(17, myUUID[:17])
+					b.WriteFixedString(17, myUUID[:16])
 					// New Classification Fields
 					b.WriteFixedString(18, clusterName)
 					b.WriteUInt8(19, uint8(NodeQualifier))
