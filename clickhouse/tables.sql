@@ -45,7 +45,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_METRICS_1M
   GROUP BY DnsDate, timestamp, ClusterName, Server, NodeQualifier, QR;
 
 -- View for top queried Top Level + 1 domains
- CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_ETLDPLUSONE_COUNT
+ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_ETLDPLUSONE_1M
   ENGINE=SummingMergeTree()
   PARTITION BY toYYYYMMDD(DnsDate)
   PRIMARY KEY (DnsDate, t , ClusterName, Server, NodeQualifier)
@@ -59,7 +59,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_METRICS_1M
   GROUP BY DnsDate, t, ClusterName, Server, NodeQualifier, EtldPlusOne;
 
 -- View for top queried domains
- CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_DOMAIN_COUNT
+ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_DOMAIN_1M
   ENGINE=SummingMergeTree()
   PARTITION BY toYYYYMMDD(DnsDate)
   PRIMARY KEY (DnsDate, t , ClusterName, Server, NodeQualifier)
@@ -73,7 +73,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_METRICS_1M
   GROUP BY DnsDate, t, ClusterName, Server, NodeQualifier, Question;
 
   -- View for unique domain count
- CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_DOMAIN_UNIQUE
+ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_DOMAIN_UNIQ_1M
   ENGINE=AggregatingMergeTree()
   PARTITION BY toYYYYMMDD(DnsDate)
   PRIMARY KEY (DnsDate, t , ClusterName, Server, NodeQualifier)
@@ -87,7 +87,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_METRICS_1M
   GROUP BY DnsDate, t, ClusterName, Server, NodeQualifier;
 
 -- View wih query OpCode
-CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_OPCODE
+CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_OPCODE_1M
   ENGINE=SummingMergeTree()
   PARTITION BY toYYYYMM(DnsDate)
   PRIMARY KEY (DnsDate, timestamp , ClusterName, Server, NodeQualifier, QR, OpCode)
@@ -101,7 +101,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_OPCODE
   GROUP BY DnsDate, timestamp, ClusterName, Server, NodeQualifier, QR, OpCode;
 
 -- View with Query Class
-CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_CLASS
+CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_CLASS_1M
   ENGINE=SummingMergeTree()
   PARTITION BY toYYYYMM(DnsDate)
   PRIMARY KEY (DnsDate, timestamp , ClusterName, Server, NodeQualifier, Class)
@@ -116,7 +116,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_CLASS
   GROUP BY DnsDate, timestamp, ClusterName, Server, NodeQualifier, Class;
 
 -- View with Query Types
-CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_TYPE
+CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_TYPE_1M
   ENGINE=SummingMergeTree()
   PARTITION BY toYYYYMM(DnsDate)
   PRIMARY KEY (DnsDate, timestamp , ClusterName, Server, NodeQualifier, Type)
@@ -131,7 +131,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_TYPE
   GROUP BY DnsDate, timestamp, ClusterName, Server, NodeQualifier, Type;
 
 -- View with query responses
-CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_RESPONSECODE
+CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_RESPONSECODE_1M
   ENGINE=SummingMergeTree()
   PARTITION BY toYYYYMM(DnsDate)
   PRIMARY KEY (DnsDate, timestamp , ClusterName, Server, NodeQualifier, ResponseCode)
@@ -147,7 +147,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_RESPONSECODE
 
 
 -- View with packet sizes
- CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_PACKET_SIZES
+ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_PACKET_SIZES_1M
   ENGINE=AggregatingMergeTree()
   PARTITION BY toYYYYMM(DnsDate)
   PRIMARY KEY (DnsDate, t , ClusterName, Server, NodeQualifier, QR)
