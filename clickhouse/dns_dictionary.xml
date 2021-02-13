@@ -95,7 +95,7 @@
             </attribute>
       </structure>
     </dictionary>
-        <dictionary>
+    <dictionary>
         <!-- Dictionary name. The dictionary will be accessed for use by this name. -->
         <name>dns_qr</name>
 
@@ -127,8 +127,7 @@
             </attribute>
       </structure>
     </dictionary>
-        </dictionary>
-        <dictionary>
+    <dictionary>
         <!-- Dictionary name. The dictionary will be accessed for use by this name. -->
         <name>dns_node_qualifiers</name>
 
