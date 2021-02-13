@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS DNS_LOG (
   ResponseCode UInt8,
   Question String,
   EtldPlusOne String,
-  Size UInt16,
+  Size UInt64,
   ID UUID
 ) 
   ENGINE = MergeTree()
@@ -147,14 +147,42 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_RESPONSECODE_1M
 
 
 -- View with packet sizes
- CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_PACKET_SIZES_1M
-  ENGINE=AggregatingMergeTree()
-  PARTITION BY toYYYYMM(DnsDate)
-  PRIMARY KEY (DnsDate, t , ClusterName, Server, NodeQualifier, QR)
-  ORDER BY (DnsDate, t, ClusterName, Server, NodeQualifier, QR)
-  TTL DnsDate + INTERVAL 30 DAY -- DNS_TTL_VARIABLE
-  SETTINGS index_granularity = 8192
+-- CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_PACKET_SIZES_1M
+-- ENGINE=AggregatingMergeTree()
+--  PARTITION BY toYYYYMM(DnsDate)
+--  PRIMARY KEY (DnsDate, timestamp , ClusterName, Server, NodeQualifier, QR)
+--  ORDER BY (DnsDate, timestamp, ClusterName, Server, NodeQualifier, QR)
+--  TTL DnsDate + INTERVAL 30 DAY -- DNS_TTL_VARIABLE
+--  SETTINGS index_granularity = 8192
+--  AS
+--  SELECT DnsDate, toStartOfMinute(timestamp) as timestamp, ClusterName, Server, NodeQualifier, QR, sumState(Size) AS TotalSize, avgState(Size) AS AverageSize 
+--  FROM DNS_LOG
+--  GROUP BY DnsDate, timestamp, ClusterName, Server, NodeQualifier, QR;
+
+
+-- View with packet sizes
+-- Table
+CREATE TABLE IF NOT EXISTS DNS_PACKET_SIZES_1M (
+  DnsDate Date,
+  timestamp DateTime,
+  Server String,
+  NodeQualifier UInt8,
+  ClusterName FixedString(64),
+  QR UInt8,
+  AverageSize UInt64,
+  TotalSize UInt64
+) 
+  ENGINE = AggregatingMergeTree()
+  PARTITION BY toYYYYMMDD(DnsDate)
+  PRIMARY KEY (timestamp , ClusterName, Server, NodeQualifier, QR)
+  ORDER BY (timestamp, ClusterName, Server, NodeQualifier, QR)
+  TTL DnsDate + INTERVAL 365 DAY -- DNS_TTL_VARIABLE
+  SETTINGS index_granularity = 8192;
+
+-- Materialised view
+ CREATE MATERIALIZED VIEW IF NOT EXISTS MV_DNS_PACKET_SIZES_1M
+  TO DNS_PACKET_SIZES_1M
   AS
-  SELECT DnsDate, toStartOfMinute(timestamp) as t, ClusterName, Server, NodeQualifier, QR, sumState(Size) AS TotalSize, avgState(Size) AS AverageSize 
+  SELECT DnsDate, toStartOfMinute(timestamp) as timestamp, ClusterName, Server, NodeQualifier, QR, sumState(Size) AS TotalSize, avgState(Size) AS AverageSize 
   FROM DNS_LOG
-  GROUP BY DnsDate, t, ClusterName, Server, NodeQualifier, QR;
+  GROUP BY DnsDate, timestamp, ClusterName, Server, NodeQualifier, QR;
