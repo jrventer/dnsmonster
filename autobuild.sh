@@ -18,7 +18,7 @@ dockercomposetemplate=$(cat <<EOF
       - "9000:9000"
     #   - "9009:9009"
     networks:
-      - dnsmonster
+      - monitoring
     ulimits:
       nofile:
         soft: 262144
@@ -41,14 +41,14 @@ dockercomposetemplate=$(cat <<EOF
     ports:
       - "3000:3000"
     networks:
-       - dnsmonster:
+       - monitoring
     depends_on:
       - ch
     volumes:
       - ./grafana/plugins:/var/lib/grafana/plugins/
       - ./bin/curl:/sbin/curl
 networks:
-  dnsmonster:
+  monitoring:
 EOF
 )
 
@@ -150,7 +150,7 @@ docker-compose up -d
 echo "Waiting 30 seconds for Containers to be fully up and running "
 sleep 30
 
-echo "Create tables for Clickhouse"
+echo "Crete tables for Clickhouse"
 docker-compose exec ch /bin/sh -c 'cat /tmp/tables.sql | clickhouse-client -h 127.0.0.1 --multiquery'
 
 echo "Adding the datasourcee to Grafana"
