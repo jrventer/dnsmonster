@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS DNS_LOG (
   ResponseCode UInt8,
   Question String,
   EtldPlusOne String,
-  Size UInt64,
+  Size UInt16,
   ID UUID
 ) 
   ENGINE = MergeTree()
