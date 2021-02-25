@@ -13,7 +13,7 @@ require (
 	github.com/namsral/flag v1.7.4-pre
 	github.com/rogpeppe/fastuuid v1.2.0
 	github.com/segmentio/kafka-go v0.4.8
-	golang.org/x/net v0.0.0-20210129194117-4acb7895a057
-	golang.org/x/sys v0.0.0-20201106081118-db71ae66460a // indirect
+	golang.org/x/net v0.0.0-20210224082022-3d97a244fca7
+	golang.org/x/sys v0.0.0-20210225091947-4ada9433c6ea // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 )
