@@ -48,43 +48,43 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_METRICS_1M
  CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_ETLDPLUSONE_1M
   ENGINE=SummingMergeTree()
   PARTITION BY toYYYYMMDD(DnsDate)
-  PRIMARY KEY (DnsDate, t , ClusterName, Server, NodeQualifier)
-  ORDER BY (DnsDate, t, ClusterName, Server, NodeQualifier, EtldPlusOne)
+  PRIMARY KEY (DnsDate, timestamp , ClusterName, Server, NodeQualifier)
+  ORDER BY (DnsDate, timestamp, ClusterName, Server, NodeQualifier, EtldPlusOne)
   TTL DnsDate + INTERVAL 30 DAY -- DNS_TTL_VARIABLE
   SETTINGS index_granularity = 8192
   AS
-  SELECT DnsDate, toStartOfMinute(timestamp) as t, ClusterName, Server, NodeQualifier, EtldPlusOne, count(*) as c 
+  SELECT DnsDate, toStartOfMinute(timestamp) as timestamp, ClusterName, Server, NodeQualifier, EtldPlusOne, count(*) as Requests, sum(Size) as TotalRequestBytes 
   FROM DNS_LOG 
   WHERE QR=0 
-  GROUP BY DnsDate, t, ClusterName, Server, NodeQualifier, EtldPlusOne;
+  GROUP BY DnsDate, timestamp, ClusterName, Server, NodeQualifier, EtldPlusOne;
 
 -- View for top queried domains
  CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_DOMAIN_1M
   ENGINE=SummingMergeTree()
   PARTITION BY toYYYYMMDD(DnsDate)
-  PRIMARY KEY (DnsDate, t , ClusterName, Server, NodeQualifier)
-  ORDER BY (DnsDate, t, ClusterName, Server, NodeQualifier, Question)
+  PRIMARY KEY (DnsDate, timestamp , ClusterName, Server, NodeQualifier)
+  ORDER BY (DnsDate, timestamp, ClusterName, Server, NodeQualifier, Question)
   TTL DnsDate + INTERVAL 30 DAY -- DNS_TTL_VARIABLE
   SETTINGS index_granularity = 8192
   AS
-  SELECT DnsDate, toStartOfMinute(timestamp) as t, ClusterName, Server, NodeQualifier, Question, count(*) as c 
+  SELECT DnsDate, toStartOfMinute(timestamp) as timestamp, ClusterName, Server, NodeQualifier, Question, count(*) as Requests, sum(Size) as TotalRequestBytes 
   FROM DNS_LOG 
   WHERE QR=0 
-  GROUP BY DnsDate, t, ClusterName, Server, NodeQualifier, Question;
+  GROUP BY DnsDate, timestamp, ClusterName, Server, NodeQualifier, Question;
 
   -- View for unique domain count
  CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_DOMAIN_UNIQ_1M
   ENGINE=AggregatingMergeTree()
   PARTITION BY toYYYYMMDD(DnsDate)
-  PRIMARY KEY (DnsDate, t , ClusterName, Server, NodeQualifier)
-  ORDER BY (DnsDate, t, ClusterName, Server, NodeQualifier)
+  PRIMARY KEY (DnsDate, timestamp , ClusterName, Server, NodeQualifier)
+  ORDER BY (DnsDate, timestamp, ClusterName, Server, NodeQualifier)
   TTL DnsDate + INTERVAL 30 DAY -- DNS_TTL_VARIABLE
   SETTINGS index_granularity = 8192
   AS
-  SELECT DnsDate, toStartOfMinute(timestamp) as t, ClusterName, Server, NodeQualifier, uniqState(Question) AS UniqueDnsCount  
+  SELECT DnsDate, toStartOfMinute(timestamp) as timestamp, ClusterName, Server, NodeQualifier, uniqState(Question) AS UniqueDnsCount  
   FROM DNS_LOG 
   WHERE QR=0 
-  GROUP BY DnsDate, t, ClusterName, Server, NodeQualifier;
+  GROUP BY DnsDate, timestamp, ClusterName, Server, NodeQualifier;
 
 -- View wih query OpCode
 CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_OPCODE_1M
@@ -147,42 +147,14 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_RESPONSECODE_1M
 
 
 -- View with packet sizes
--- CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_PACKET_SIZES_1M
--- ENGINE=AggregatingMergeTree()
---  PARTITION BY toYYYYMM(DnsDate)
---  PRIMARY KEY (DnsDate, timestamp , ClusterName, Server, NodeQualifier, QR)
---  ORDER BY (DnsDate, timestamp, ClusterName, Server, NodeQualifier, QR)
---  TTL DnsDate + INTERVAL 30 DAY -- DNS_TTL_VARIABLE
---  SETTINGS index_granularity = 8192
---  AS
---  SELECT DnsDate, toStartOfMinute(timestamp) as timestamp, ClusterName, Server, NodeQualifier, QR, sumState(Size) AS TotalSize, avgState(Size) AS AverageSize 
---  FROM DNS_LOG
---  GROUP BY DnsDate, timestamp, ClusterName, Server, NodeQualifier, QR;
-
-
--- View with packet sizes
--- Table
-CREATE TABLE IF NOT EXISTS DNS_PACKET_SIZES_1M (
-  DnsDate Date,
-  timestamp DateTime,
-  Server String,
-  NodeQualifier UInt8,
-  ClusterName FixedString(64),
-  QR UInt8,
-  AverageSize UInt64,
-  TotalSize UInt64
-) 
-  ENGINE = AggregatingMergeTree()
-  PARTITION BY toYYYYMMDD(DnsDate)
-  PRIMARY KEY (timestamp , ClusterName, Server, NodeQualifier, QR)
-  ORDER BY (timestamp, ClusterName, Server, NodeQualifier, QR)
-  TTL DnsDate + INTERVAL 365 DAY -- DNS_TTL_VARIABLE
-  SETTINGS index_granularity = 8192;
-
--- Materialised view
- CREATE MATERIALIZED VIEW IF NOT EXISTS MV_DNS_PACKET_SIZES_1M
-  TO DNS_PACKET_SIZES_1M
-  AS
-  SELECT DnsDate, toStartOfMinute(timestamp) as timestamp, ClusterName, Server, NodeQualifier, QR, sumState(Size) AS TotalSize, avgState(Size) AS AverageSize 
-  FROM DNS_LOG
-  GROUP BY DnsDate, timestamp, ClusterName, Server, NodeQualifier, QR;
+CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_PACKET_SIZES_1M
+ENGINE=AggregatingMergeTree()
+ PARTITION BY toYYYYMM(DnsDate)
+ PRIMARY KEY (DnsDate, timestamp , ClusterName, Server, NodeQualifier, QR)
+ ORDER BY (DnsDate, timestamp, ClusterName, Server, NodeQualifier, QR)
+ TTL DnsDate + INTERVAL 6 MONTH -- DNS_TTL_VARIABLE
+ SETTINGS index_granularity = 8192
+ AS
+ SELECT DnsDate, toStartOfMinute(timestamp) as timestamp, ClusterName, Server, NodeQualifier, QR, sumState(toUInt64(Size)) AS TotalSize, avgState(Size) AS AverageSize 
+ FROM DNS_LOG
+ GROUP BY DnsDate, timestamp, ClusterName, Server, NodeQualifier, QR;

@@ -19,7 +19,7 @@ import (
 	"github.com/namsral/flag"
 )
 
-const VERSION = "v0.8.4"
+const VERSION = "v0.8.5"
 
 var fs = flag.NewFlagSetWithEnvPrefix(os.Args[0], "DNSMONSTER", 0)
 var devName = fs.String("devName", "", "Device used to capture")

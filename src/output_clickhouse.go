@@ -46,7 +46,7 @@ func connectClickhouseRetry(exiting chan bool, clickhouseHost string) clickhouse
 }
 
 func connectClickhouse(exiting chan bool, clickhouseHost string) (clickhouse.Clickhouse, error) {
-	connection, err := clickhouse.OpenDirect(fmt.Sprintf("tcp://%v?debug=%v", clickhouseHost, *clickhouseDebug))
+	connection, err := clickhouse.OpenDirect(fmt.Sprintf("tcp://%v?compress=1&debug=%v", clickhouseHost, *clickhouseDebug))
 	if err != nil {
 		log.Println(err)
 		return nil, err
