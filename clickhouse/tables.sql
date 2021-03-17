@@ -1,13 +1,13 @@
 CREATE TABLE IF NOT EXISTS DNS_LOG (
   DnsDate Date,
   timestamp DateTime,
-  Server String,
+  Server LowCardinality(String),
   NodeQualifier UInt8,
   ClusterName FixedString(64),
   IPVersion UInt8,
   SrcIP UInt32,
   DstIP UInt32,
-  Protocol FixedString(3),
+  Protocol LowCardinality(String),
   QR UInt8,
   OpCode UInt8,
   Class UInt16,
@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS DNS_LOG (
   DoBit UInt8,
   FullQuery String,
   ResponseCode UInt8,
-  Question String,
-  EtldPlusOne String,
+  Question LowCardinality(String),
+  EtldPlusOne LowCardinality(String),
   Size UInt16,
   ID UUID
 ) 
@@ -50,7 +50,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_METRICS_1M
   PARTITION BY toYYYYMMDD(DnsDate)
   PRIMARY KEY (DnsDate, timestamp , ClusterName, Server, NodeQualifier)
   ORDER BY (DnsDate, timestamp, ClusterName, Server, NodeQualifier, EtldPlusOne)
-  TTL DnsDate + INTERVAL 30 DAY -- DNS_TTL_VARIABLE
+  TTL DnsDate + INTERVAL 5 DAY -- DNS_TTL_VARIABLE
   SETTINGS index_granularity = 8192
   AS
   SELECT DnsDate, toStartOfMinute(timestamp) as timestamp, ClusterName, Server, NodeQualifier, EtldPlusOne, count(*) as Requests, sum(Size) as TotalRequestBytes 
@@ -64,7 +64,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_METRICS_1M
   PARTITION BY toYYYYMMDD(DnsDate)
   PRIMARY KEY (DnsDate, timestamp , ClusterName, Server, NodeQualifier)
   ORDER BY (DnsDate, timestamp, ClusterName, Server, NodeQualifier, Question)
-  TTL DnsDate + INTERVAL 30 DAY -- DNS_TTL_VARIABLE
+  TTL DnsDate + INTERVAL 5 DAY -- DNS_TTL_VARIABLE
   SETTINGS index_granularity = 8192
   AS
   SELECT DnsDate, toStartOfMinute(timestamp) as timestamp, ClusterName, Server, NodeQualifier, Question, count(*) as Requests, sum(Size) as TotalRequestBytes 
@@ -78,7 +78,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_METRICS_1M
   PARTITION BY toYYYYMMDD(DnsDate)
   PRIMARY KEY (DnsDate, timestamp , ClusterName, Server, NodeQualifier)
   ORDER BY (DnsDate, timestamp, ClusterName, Server, NodeQualifier)
-  TTL DnsDate + INTERVAL 30 DAY -- DNS_TTL_VARIABLE
+  TTL DnsDate + INTERVAL 5 DAY -- DNS_TTL_VARIABLE
   SETTINGS index_granularity = 8192
   AS
   SELECT DnsDate, toStartOfMinute(timestamp) as timestamp, ClusterName, Server, NodeQualifier, uniqState(Question) AS UniqueDnsCount  
