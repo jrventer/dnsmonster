@@ -7,9 +7,9 @@ import (
 
 	"log"
 	"net"
+	"strings"
 	"sync"
 	"time"
-	"strings"
 
 	"github.com/ClickHouse/clickhouse-go"
 	data "github.com/ClickHouse/clickhouse-go/lib/data"
@@ -163,12 +163,12 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 							doBit = 1
 						}
 					}
-					eTLDPlusOne, err := publicsuffix.EffectiveTLDPlusOne(strings.TrimSuffix(dnsQuery.Name,"."))
+					eTLDPlusOne, err := publicsuffix.EffectiveTLDPlusOne(strings.TrimSuffix(dnsQuery.Name, "."))
 					if err == nil && eTLDPlusOne != "" {
 						eTLDPlusOne = strings.TrimRight(eTLDPlusOne, ".")
-					} else if strings.Count(strings.TrimSuffix(dnsQuery.Name,"."), ".") == 1 {
+					} else if strings.Count(strings.TrimSuffix(dnsQuery.Name, "."), ".") == 1 {
 						// Handle publicsuffix.EffectiveTLDPlusOne eTLD+1 error with 1 dot in the domain.
-						eTLDPlusOne = strings.TrimSuffix(dnsQuery.Name,".")
+						eTLDPlusOne = strings.TrimSuffix(dnsQuery.Name, ".")
 					}
 					// log.Println(fmt.Sprintf("debug question:%v etld+1:%v", dnsQuery.Name,eTLDPlusOne))
 					b.NumRows++
