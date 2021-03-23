@@ -107,7 +107,7 @@ func clickhouseSendData(connect clickhouse.Clickhouse, batch []DNSResult, server
 		return err
 	}
 
-	_, err = connect.Prepare("INSERT INTO DNS_LOG (DnsDate, timestamp, Server, IPVersion, SrcIP, DstIP, Protocol, QR, OpCode, Class, Type, ResponseCode, Question, Size, Edns0Present, DoBit,FullQuery, ID, ClusterName, NodeQualifier, EtldPlusOne) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+	_, err = connect.Prepare("INSERT INTO *clickhouseTable (DnsDate, timestamp, Server, IPVersion, SrcIP, DstIP, Protocol, QR, OpCode, Class, Type, ResponseCode, Question, Size, Edns0Present, DoBit,FullQuery, ID, ClusterName, NodeQualifier, EtldPlusOne) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
 	if err != nil {
 		return err
 	}

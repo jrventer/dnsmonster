@@ -19,7 +19,7 @@ import (
 	"github.com/namsral/flag"
 )
 
-const VERSION = "v0.8.5"
+const VERSION = "v0.8.6"
 
 var fs = flag.NewFlagSetWithEnvPrefix(os.Args[0], "DNSMONSTER", 0)
 var devName = fs.String("devName", "", "Device used to capture")
@@ -31,6 +31,7 @@ var filter = fs.String("filter", "((ip and (ip[9] == 6 or ip[9] == 17)) or (ip6 
 var port = fs.Uint("port", 53, "Port selected to filter packets")
 var gcTime = fs.Duration("gcTime", 10*time.Second, "Garbage Collection interval for tcp assembly and ip defragmentation")
 var clickhouseAddress = fs.String("clickhouseAddress", "localhost:9000", "Address of the clickhouse database to save the results")
+var clickhouseTable = fs.String("clickhouseTable", "DNS_LOG", "Table to insert the data to. Default = DNS_LOG")
 var clickhouseDelay = fs.Duration("clickhouseDelay", 1*time.Second, "Interval between sending results to ClickHouse")
 var clickhouseDebug = fs.Bool("clickhouseDebug", false, "Debug Clickhouse connection")
 var clickhouseOutputType = fs.Uint("clickhouseOutputType", 2, "What should be written to clickhouse. options: 0: none, 1: all, 2: apply skipdomains logic, 3: apply allowdomains logic, 4: apply both skip and allow domains logic")

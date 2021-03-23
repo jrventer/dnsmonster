@@ -27,7 +27,34 @@ CREATE TABLE IF NOT EXISTS DNS_LOG (
   ORDER BY (timestamp, ClusterName, Server, NodeQualifier, cityHash64(ID))
   SAMPLE BY cityHash64(ID)
   TTL DnsDate + INTERVAL 30 DAY -- DNS_TTL_VARIABLE
-  SETTINGS index_granularity = 8192;
+  SETTINGS index_granularity = 8192,min_bytes_for_wide_part = '10M';
+
+
+CREATE TABLE IF NOT EXISTS DNS_LOG_BUFFER (
+  DnsDate Date,
+  timestamp DateTime,
+  Server LowCardinality(String),
+  NodeQualifier UInt8,
+  ClusterName FixedString(64),
+  IPVersion UInt8,
+  SrcIP UInt32,
+  DstIP UInt32,
+  Protocol LowCardinality(String),
+  QR UInt8,
+  OpCode UInt8,
+  Class UInt16,
+  Type UInt16,
+  Edns0Present UInt8,
+  DoBit UInt8,
+  FullQuery String,
+  ResponseCode UInt8,
+  Question LowCardinality(String),
+  EtldPlusOne LowCardinality(String),
+  Size UInt16,
+  ID UUID
+  MATERIALIZED toDate(timestamp)
+) 
+ENGINE = Buffer('default', 'DNS_LOG', 16, 5, 30, 10000, 1000000, 10000000, 100000000);
 
 -- View 1min DNS Metrics per Cluster, Server Subscriber/Internet Request/Response
 CREATE MATERIALIZED VIEW IF NOT EXISTS DNS_METRICS_1M
